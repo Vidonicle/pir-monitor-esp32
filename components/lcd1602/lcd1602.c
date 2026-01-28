@@ -1,6 +1,7 @@
 #include "lcd1602.h"
 
 #include <stdint.h>
+#include <string.h>
 
 #include "driver/i2c.h"
 #include "esp_rom_sys.h"
@@ -8,8 +9,6 @@
 #define PIN_RS 0
 #define PIN_EN 2
 #define PIN_BL 3
-#define LCD_CMD 0
-#define LCD_DATA 1
 
 #define COLUMNS 16
 #define ROWS 2
@@ -50,12 +49,12 @@ static void lcd_write8(uint8_t data, uint8_t rs) {
 }
 
 static void lcd_cmd(uint8_t cmd) {
-    lcd_write8(cmd, LCD_CMD);
+    lcd_write8(cmd, 0);
     esp_rom_delay_us(50);
 }
 
 static void lcd_data(uint8_t data) {
-    lcd_write8(data, LCD_DATA);
+    lcd_write8(data, 1);
     esp_rom_delay_us(50);
 }
 
@@ -87,16 +86,44 @@ void lcd1602_clear(void) {
 }
 
 void lcd_write_line(uint8_t row, const char *text) {
+    int chars = 0;
     lcd_cmd(row == 0 ? 0x80 : 0xC0);
 
-    for (uint8_t i = 0; i < COLUMNS && text[i]; i++) {
+    for (uint8_t i = 0; i < COLUMNS && text[i]; i++, chars++) {
         lcd_data(text[i]);
+    }
+
+    chars = COLUMNS - chars;
+    for (uint8_t i = 0; i < chars; i++) {
+        lcd_data(' ');
     }
 }
 
 void lcd_write(const char *line0, const char *line1) {
     lcd1602_clear();
 
-    lcd_write_line(0, line0 ? line0 : "");
-    lcd_write_line(1, line1 ? line1 : "");
+    lcd_write_line(0, line0);
+    lcd_write_line(1, line1);
+}
+
+void lcd_scroll_line(uint8_t row, const char *text, bool to_right, uint32_t speed_ms) {
+    size_t len = strlen(text);
+    char buf[17];
+
+    if (len <= COLUMNS) {
+        lcd_write_line(row, text);
+        return;
+    }
+
+    for (size_t offset = 0;; offset++) {
+        size_t base = to_right ? (len - (offset % len)) : (offset % len);
+
+        for (size_t i = 0; i < COLUMNS; i++) {
+            buf[i] = text[(base + i) % len];
+        }
+        buf[COLUMNS] = '\0';
+
+        lcd_write_line(row, buf);
+        vTaskDelay(pdMS_TO_TICKS(speed_ms));
+    }
 }
