@@ -8,8 +8,8 @@
 #define PIN_RS 0
 #define PIN_EN 2
 #define PIN_BL 3
-#define LCD_DATA 0
-#define LCD_CMD 1
+#define LCD_CMD 0
+#define LCD_DATA 1
 
 #define COLUMNS 16
 #define ROWS 2
