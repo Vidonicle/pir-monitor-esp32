@@ -67,10 +67,11 @@ venv/
 .venv/
 env/
 
-# Language Servers
+# Language Servers / Tools
+.cache/        # <-- added
 .clangd/
 .ccls-cache/
-# keep compile_commands.json if you use clangd, else ignore it:
+# keep compile_commands.json if using clangd, else ignore it:
 compile_commands.json
 
 # Windows specific

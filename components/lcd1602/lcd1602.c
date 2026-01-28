@@ -8,6 +8,8 @@
 #define PIN_RS 0
 #define PIN_EN 2
 #define PIN_BL 3
+#define LCD_DATA 0
+#define LCD_CMD 1
 
 #define COLUMNS 16
 #define ROWS 2
@@ -48,12 +50,12 @@ static void lcd_write8(uint8_t data, uint8_t rs) {
 }
 
 static void lcd_cmd(uint8_t cmd) {
-    lcd_write8(cmd, 0);
+    lcd_write8(cmd, LCD_CMD);
     esp_rom_delay_us(50);
 }
 
 static void lcd_data(uint8_t data) {
-    lcd_write8(data, 1);
+    lcd_write8(data, LCD_DATA);
     esp_rom_delay_us(50);
 }
 
