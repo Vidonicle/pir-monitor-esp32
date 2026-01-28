@@ -1,4 +1,6 @@
 #include <stdbool.h>
+#include <stdint.h>
+#include <string.h>
 
 #include "driver/gpio.h"
 #include "esp_log.h"
@@ -18,9 +20,22 @@ void app_main(void) {
 
     lcd_queue = xQueueCreate(4, sizeof(pir_event_t));
 
-    ESP_LOGI("INIT", "Warming up");
-    lcd_write("INIALIZING", ":3");
-    vTaskDelay(pdMS_TO_TICKS(30000));  // 30s warm-up delay
+    char initmsg[17] = " Initializing   ";
+    char loading_bar[17] = "[              ]";
+
+    ESP_LOGI("INIT", "Warmup");
+    // 8s warm-up delay
+    for (uint8_t i = 0; i < 15; i++) {
+        if (i % 2 == 0)
+            initmsg[14] = '|';
+        if (i % 2 == 1)
+            initmsg[14] = '-';
+
+        loading_bar[i] = (i == 0) ? '[' : 0xFF;
+
+        lcd_write(initmsg, loading_bar);
+        vTaskDelay(pdMS_TO_TICKS(500));
+    }
 
     xTaskCreate(pir_task, "pir_task", 2048, NULL, 1, NULL);
     xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 1, NULL);
