@@ -68,7 +68,7 @@ venv/
 env/
 
 # Language Servers / Tools
-.cache/        # <-- added
+.cache/
 .clangd/
 .ccls-cache/
 # keep compile_commands.json if using clangd, else ignore it:
