@@ -2,12 +2,15 @@
 
 #include "driver/i2c.h"
 #include "events.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "lcd1602.h"
-#include "pir_task.h"
 
-#define LCD_PORT I2C_NUM_0
 #define SDA_PIN 21
 #define SCL_PIN 22
+#define LCD_ADDR 0x27
+
+static QueueHandle_t s_event_queue;
 
 void lcd_i2c_init(void) {
     i2c_config_t cfg = {.mode = I2C_MODE_MASTER,
@@ -17,15 +20,17 @@ void lcd_i2c_init(void) {
                         .scl_pullup_en = GPIO_PULLUP_ENABLE,
                         .master.clk_speed = 100000};
 
-    i2c_param_config(LCD_PORT, &cfg);
-    i2c_driver_install(LCD_PORT, cfg.mode, 0, 0, 0);
+    i2c_param_config(I2C_NUM_0, &cfg);
+    i2c_driver_install(I2C_NUM_0, cfg.mode, 0, 0, 0);
 }
 
-void lcd_task(void *pv) {
+static void lcd_task(void *pv) {
     pir_event_t e;
+
     lcd_write("PIR Monitor", "Waiting...");
-    while (1) {
-        if (xQueueReceive(event_queue, &e, portMAX_DELAY)) {
+
+    for (;;) {
+        if (xQueueReceive(s_event_queue, &e, portMAX_DELAY)) {
             if (e == PIR_EVENT_MOTION_START) {
                 lcd_write("PIR: ALERT", "MOTION DETECTED");
             } else if (e == PIR_EVENT_MOTION_STOP) {
@@ -33,4 +38,10 @@ void lcd_task(void *pv) {
             }
         }
     }
+}
+
+void lcd_task_start(QueueHandle_t q) {
+    s_event_queue = q;
+
+    xTaskCreate(lcd_task, "lcd_task", 4096, NULL, 1, NULL);
 }

@@ -4,9 +4,6 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/queue.h"
 
-extern QueueHandle_t event_queue;
-
-void pir_gpio_init(void);
-void pir_task(void *pv);
+void pir_task_start(QueueHandle_t q);
 
 #endif /* PIR_TASK_H */

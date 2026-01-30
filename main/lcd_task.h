@@ -3,7 +3,7 @@
 
 #include "freertos/FreeRTOS.h"
 
+void lcd_task_start(QueueHandle_t q);
 void lcd_i2c_init(void);
-void lcd_task(void *pv);
 
 #endif /* LCD_TASK_H */
