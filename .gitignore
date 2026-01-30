@@ -32,7 +32,7 @@ bootloader/
 flash_project_args
 partition-table.bin
 project_description.json
-flasher_args.json # Generated in build directory
+flasher_args.json
 
 # DO NOT ignore sdkconfig — needed for reproducible builds
 # sdkconfig
@@ -42,10 +42,9 @@ flasher_args.json # Generated in build directory
 # For older versions or manual component management
 /components/.idf/
 **/components/.idf/
+
 # For modern ESP-IDF component manager
 managed_components/
-# If ESP-IDF tools are installed/referenced locally to the project
-.espressif/
 
 # CMake generated files
 CMakeCache.txt
@@ -71,8 +70,6 @@ env/
 .cache/
 .clangd/
 .ccls-cache/
-# keep compile_commands.json if using clangd, else ignore it:
-compile_commands.json
 
 # Windows specific
 Thumbs.db
@@ -81,6 +78,6 @@ Desktop.ini
 
 # User-specific configuration files
 *.user
-*.workspace # General workspace files, can be from various tools
-*.suo       # Visual Studio Solution User Options
-*.sln.docstates # Visual Studio
+*.workspace
+*.suo
+*.sln.docstates
