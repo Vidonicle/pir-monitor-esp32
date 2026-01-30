@@ -2,14 +2,14 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "driver/gpio.h"
 #include "esp_log.h"
 #include "events.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/projdefs.h"
 #include "freertos/task.h"
-#include "hardware.h"
 #include "lcd1602.h"
+#include "lcd_task.h"
+#include "pir_task.h"
 
 void app_main(void) {
     lcd_i2c_init();
@@ -18,7 +18,7 @@ void app_main(void) {
 
     pir_gpio_init();
 
-    lcd_queue = xQueueCreate(4, sizeof(pir_event_t));
+    event_queue = xQueueCreate(4, sizeof(pir_event_t));
 
     char initmsg[17] = " Initializing   ";
     char loading_bar[17] = "[              ]";

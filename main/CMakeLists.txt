@@ -1,7 +1,10 @@
 idf_component_register(
     SRCS
         main.c
-        hardware.c
-    INCLUDE_DIRS .
-    REQUIRES lcd1602
+        lcd_task.c
+        pir_task.c
+    INCLUDE_DIRS 
+        .
+    REQUIRES 
+        lcd1602
 )
